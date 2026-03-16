@@ -6,14 +6,24 @@ const jwt       = require("jsonwebtoken");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// CORS 
+app.use(cors({
+  origin: [
+    "http://localhost:5173",                
+    "https://future-fs-02-96g6.vercel.app", 
+    process.env.FRONTEND_URL,               
+  ].filter(Boolean),
+  credentials: true,
+}));
+
 app.use(express.json());
 
 // Database 
 mongoose
   .connect(process.env.MONGO_URI || "mongodb://localhost:27017/crm")
-  .then(() => console.log("  MongoDB connected"))
-  .catch(err => console.error("  MongoDB error:", err));
+  .then(() => console.log("✅  MongoDB connected"))
+  .catch(err => console.error("❌  MongoDB error:", err));
 
 // Schemas 
 const LeadSchema = new mongoose.Schema({
@@ -35,7 +45,7 @@ const AdminSchema = new mongoose.Schema({
 const Lead  = mongoose.model("Lead",  LeadSchema);
 const Admin = mongoose.model("Admin", AdminSchema);
 
-// Auth middleware 
+// Auth middleware
 const SECRET = process.env.JWT_SECRET || "change_me_in_production";
 
 function auth(req, res, next) {
@@ -49,9 +59,9 @@ function auth(req, res, next) {
   }
 }
 
-// Auth routes 
+//Auth routes 
 
-// POST /api/auth/register  ← run once to create your admin
+// POST /api/auth/register
 app.post("/api/auth/register", async (req, res) => {
   const { username, password } = req.body;
   const hash = await bcrypt.hash(password, 10);
@@ -73,8 +83,7 @@ app.post("/api/auth/login", async (req, res) => {
   res.json({ token });
 });
 
-//Lead routes (all protected) 
-
+// Lead routes (all protected) 
 // GET /api/leads?status=new&search=sarah
 app.get("/api/leads", auth, async (req, res) => {
   const { status, search } = req.query;
@@ -100,7 +109,7 @@ app.get("/api/leads/:id", auth, async (req, res) => {
   res.json(lead);
 });
 
-// PATCH /api/leads/:id  (update status, note, or any field)
+// PATCH /api/leads/:id
 app.patch("/api/leads/:id", auth, async (req, res) => {
   const lead = await Lead.findByIdAndUpdate(req.params.id, req.body, { new: true });
   if (!lead) return res.status(404).json({ error: "Not found" });
@@ -113,8 +122,7 @@ app.delete("/api/leads/:id", auth, async (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-// Stats route
-// GET /api/stats
+// Stats
 app.get("/api/stats", auth, async (req, res) => {
   const [total, byStatus, bySource] = await Promise.all([
     Lead.countDocuments(),
@@ -124,8 +132,7 @@ app.get("/api/stats", auth, async (req, res) => {
   res.json({ total, byStatus, bySource });
 });
 
-//Public route (website contact form → CRM)
-// POST /api/public/leads  , no auth needed
+// Public route (website contact form → CRM) 
 app.post("/api/public/leads", async (req, res) => {
   try {
     const lead = await Lead.create({ ...req.body, status: "new", source: req.body.source || "Website" });
@@ -135,6 +142,6 @@ app.post("/api/public/leads", async (req, res) => {
   }
 });
 
-
+// Start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`  API running on http://localhost:${PORT}`));
