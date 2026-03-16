@@ -1,0 +1,61 @@
+export function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+export const SEED_LEADS = [
+  {
+    id: "lead_001",
+    name: "Sarah Chen",
+    email: "sarah@techcorp.com",
+    phone: "+1 415 555 0192",
+    company: "TechCorp",
+    source: "Website",
+    status: "new",
+    note: "Filled in the contact form asking about enterprise pricing.",
+    createdAt: "2026-03-01",
+  },
+  {
+    id: "lead_002",
+    name: "Marcus Williams",
+    email: "marcus@designlab.io",
+    phone: "+1 212 555 0847",
+    company: "DesignLab",
+    source: "Referral",
+    status: "contacted",
+    note: "Had a 30-min discovery call. Very interested. Follow up next week.",
+    createdAt: "2026-02-27",
+  },
+  {
+    id: "lead_003",
+    name: "Elena Vasquez",
+    email: "elena@growthco.com",
+    phone: "+1 305 555 0331",
+    company: "GrowthCo",
+    source: "LinkedIn",
+    status: "qualified",
+    note: "Budget confirmed. Waiting on legal approval.",
+    createdAt: "2026-02-25",
+  },
+  {
+    id: "lead_004",
+    name: "James Park",
+    email: "james@finflow.com",
+    phone: "+1 628 555 0741",
+    company: "FinFlow",
+    source: "Cold Outreach",
+    status: "converted",
+    note: "Signed a 12-month contract. Onboarding starts March 15.",
+    createdAt: "2026-02-15",
+  },
+  {
+    id: "lead_005",
+    name: "Aisha Okonkwo",
+    email: "aisha@healthplus.ng",
+    phone: "+234 801 555 0228",
+    company: "HealthPlus",
+    source: "Website",
+    status: "lost",
+    note: "Went with a competitor on price. Revisit in Q3.",
+    createdAt: "2026-02-14",
+  },
+];

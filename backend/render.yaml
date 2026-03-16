@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────
+#  render.yaml  —  Render deployment configuration
+#  Defines both the backend (Web Service) and
+#  frontend (Static Site) as separate services.
+#
+#  Commit this file to the ROOT of your GitHub repo.
+#  Then go to render.com → New → Blueprint → connect your repo.
+# ─────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Backend: Node.js / Express API ─────────────────────────
+  - type: web
+    name: leadbase-crm-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGO_URI
+        sync: false          # You will paste this in the Render dashboard
+      - key: JWT_SECRET
+        sync: false          # You will paste this in the Render dashboard
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+
+  # ── Frontend: React / Vite Static Site ─────────────────────
+  - type: static
+    name: leadbase-crm-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false          # Paste your backend Render URL here, e.g:
+                             # https://leadbase-crm-api.onrender.com
+    routes:
+      # Send all routes to index.html so React handles navigation
+      - type: rewrite
+        source: /*
+        destination: /index.html
